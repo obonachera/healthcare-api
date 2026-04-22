@@ -15,6 +15,8 @@ class UpsertClinicRequest extends FormRequest
 
     public const string ADDRESS = 'address';
 
+    public const string DOCTORS = 'doctors';
+
     /**
      * @return array<string, mixed>
      */
@@ -39,6 +41,8 @@ class UpsertClinicRequest extends FormRequest
                 'max:255',
                 'regex:/^[\pL\pN\s,.\-#\/]+$/u',
             ],
+            self::DOCTORS => ['array'],
+            self::DOCTORS . '.*' => ['integer', 'exists:doctors,id'],
         ];
     }
 
@@ -56,9 +60,13 @@ class UpsertClinicRequest extends FormRequest
 
     public function toDto(): ClinicDto
     {
+        /** @var array<int> $doctors */
+        $doctors = $this->input(self::DOCTORS) ?? [];
+
         return new ClinicDto(
             name: $this->string(self::NAME)->toString(),
             address: $this->string(self::ADDRESS)->toString(),
+            doctors: $doctors,
         );
     }
 }
