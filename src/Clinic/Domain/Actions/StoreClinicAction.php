@@ -18,6 +18,8 @@ class StoreClinicAction
 
         $clinic->saveOrFail();
 
-        return $clinic;
+        $clinic->doctors()->sync($clinicDto->doctors);
+
+        return $clinic->loadCount('doctors');
     }
 }

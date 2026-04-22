@@ -15,7 +15,7 @@ class ListClinicAction
      */
     public function execute(): LengthAwarePaginator
     {
-        return QueryBuilder::for(Clinic::query())
+        return QueryBuilder::for(Clinic::query()->withCount('doctors'))
             ->allowedFilters(['name'])
             ->allowedSorts(['name'])
             ->orderBy('id', 'desc')
