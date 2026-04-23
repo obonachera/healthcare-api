@@ -20,6 +20,7 @@ class UpsertClinicRequest extends FormRequest
      */
     public function rules(): array
     {
+        /** @var Clinic|null $clinic */
         $clinic = $this->route('clinic');
 
         return [
