@@ -9,6 +9,12 @@ use Lightit\Users\App\Controllers\GetUserController;
 use Lightit\Users\App\Controllers\ListUserController;
 use Lightit\Users\App\Controllers\StoreUserController;
 use Lightit\Users\App\Controllers\UpdateUserController;
+use Lightit\Clinic\App\Controllers\DeleteClinicController;
+use Lightit\Clinic\App\Controllers\GetClinicController;
+use Lightit\Clinic\App\Controllers\ListClinicController;
+use Lightit\Clinic\App\Controllers\StoreClinicController;
+use Lightit\Clinic\App\Controllers\UpdateClinicController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -42,4 +48,15 @@ Route::prefix('users')
             Route::put('/', UpdateUserController::class);
             Route::delete('/', DeleteUserController::class);
         })->whereNumber('user');
+    });
+
+Route::prefix('clinics')
+    ->group(static function (): void {
+        Route::get('/', ListClinicController::class);
+        Route::post('/', StoreClinicController::class);
+        Route::prefix('{clinic}')->group(static function (): void {
+            Route::get('/', GetClinicController::class)->withTrashed();
+            Route::put('/', UpdateClinicController::class);
+            Route::delete('/', DeleteClinicController::class);
+        })->whereNumber('clinic');
     });
