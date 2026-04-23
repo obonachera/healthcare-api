@@ -23,13 +23,8 @@ class UpsertClinicRequest extends FormRequest
      */
     public function rules(): array
     {
-<<<<<<< HEAD
         /** @var Clinic|null $clinic */
         $clinic = $this->route('clinic');
-=======
-        $clinic = $this->route('clinic');
-        $clinicId = $clinic instanceof Clinic ? $clinic->id : $clinic;
->>>>>>> 34de92b (feat: update and insert clinics)
 
         return [
             self::NAME => [
@@ -38,11 +33,7 @@ class UpsertClinicRequest extends FormRequest
                 'min:4',
                 'max:80',
                 'regex:/^[\pL][\pL\s\'.-]*$/u',
-<<<<<<< HEAD
                 Rule::unique(Clinic::class, 'name')->ignore($clinic?->id),
-=======
-                Rule::unique(Clinic::class, 'name')->ignore($clinicId),
->>>>>>> 34de92b (feat: update and insert clinics)
             ],
             self::ADDRESS => [
                 'required',
