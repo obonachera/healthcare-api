@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Lightit\Clinic\Domain\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Lightit\Doctor\Domain\Models\Doctor;
 
 /**
  * @property int                          $id
@@ -14,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Carbon\CarbonImmutable      $created_at
  * @property \Carbon\CarbonImmutable      $updated_at
  * @property \Carbon\CarbonImmutable|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Doctor> $doctors
+ * @property-read int|null $doctors_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Clinic newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Clinic newQuery()
@@ -52,5 +56,13 @@ class Clinic extends Model
         return [
             'deleted_at' => 'immutable_datetime',
         ];
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\Lightit\Doctor\Domain\Models\Doctor, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
+     */
+    public function doctors(): BelongsToMany
+    {
+        return $this->belongsToMany(Doctor::class, 'clinic_doctor');
     }
 }

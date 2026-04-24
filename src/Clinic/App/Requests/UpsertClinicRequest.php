@@ -8,12 +8,15 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Lightit\Clinic\Domain\DataTransferObjects\ClinicDto;
 use Lightit\Clinic\Domain\Models\Clinic;
+use Lightit\Doctor\Domain\Models\Doctor;
 
 class UpsertClinicRequest extends FormRequest
 {
     public const string NAME = 'name';
 
     public const string ADDRESS = 'address';
+
+    public const string DOCTORS = 'doctors';
 
     /**
      * @return array<string, mixed>
@@ -39,6 +42,8 @@ class UpsertClinicRequest extends FormRequest
                 'max:255',
                 'regex:/^[\pL\pN\s,.\-#\/]+$/u',
             ],
+            self::DOCTORS => ['array', Rule::exists(Doctor::class, 'id')],
+            self::DOCTORS . '.*' => [Rule::numeric()->integer()],
         ];
     }
 
@@ -56,9 +61,13 @@ class UpsertClinicRequest extends FormRequest
 
     public function toDto(): ClinicDto
     {
+        /** @var array<int> $doctors */
+        $doctors = $this->array(self::DOCTORS);
+
         return new ClinicDto(
             name: $this->string(self::NAME)->toString(),
             address: $this->string(self::ADDRESS)->toString(),
+            doctors: $doctors,
         );
     }
 }
