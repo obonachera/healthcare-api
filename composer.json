@@ -13,9 +13,10 @@
     "bepsvpt/secure-headers": "^9.0",
     "dedoc/scramble": "^0.13",
     "guzzlehttp/guzzle": "^7.2",
-    "laravel/framework": "^13.0",
+    "laravel/framework": "^12.0",
     "laravel/sanctum": "^4.0",
     "laravel/tinker": "^3.0",
+    "light-it-labs/lightit-auth-laravel": "^1.2",
     "opcodesio/log-viewer": "^3.21",
     "saloonphp/laravel-plugin": "^4.0",
     "saloonphp/saloon": "^4.0",
@@ -119,5 +120,11 @@
     }
   },
   "minimum-stability": "stable",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Light-it-labs/lightit-auth-laravel.git"
+        }
+    ]
 }

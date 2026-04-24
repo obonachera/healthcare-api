@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Lightit\Authentication\App\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Email;
+use Lightit\Authentication\Domain\DataTransferObjects\ResetPasswordDto;
+
+final class ResetPasswordRequest extends FormRequest
+{
+    public const string TOKEN = 'token';
+
+    public const string EMAIL = 'email';
+
+    public const string PASSWORD = 'password';
+
+    public function rules(): array
+    {
+        return [
+            self::TOKEN => ['required', 'string'],
+            self::EMAIL => ['required', Email::default()],
+            self::PASSWORD => ['required', 'string'],
+        ];
+    }
+
+    public function toDto(): ResetPasswordDto
+    {
+        return new ResetPasswordDto(
+            token: $this->string(self::TOKEN)->toString(),
+            email: $this->string(self::EMAIL)->toString(),
+            password: $this->string(self::PASSWORD)->toString(),
+        );
+    }
+}
