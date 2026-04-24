@@ -62,7 +62,7 @@ class UpsertClinicRequest extends FormRequest
     public function toDto(): ClinicDto
     {
         /** @var array<int> $doctors */
-        $doctors = $this->input(self::DOCTORS) ?? [];
+        $doctors = $this->array(self::DOCTORS);
 
         return new ClinicDto(
             name: $this->string(self::NAME)->toString(),
