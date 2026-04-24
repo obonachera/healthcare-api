@@ -4522,16 +4522,16 @@
         },
         {
             "name": "saloonphp/laravel-plugin",
-            "version": "v4.2.0",
+            "version": "v4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/saloonphp/laravel-plugin.git",
-                "reference": "51411a612426d5a9a334578ff0f2f64183683e0f"
+                "reference": "c9754084dabe1002000d01cc2192fd08cfa6079d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/saloonphp/laravel-plugin/zipball/51411a612426d5a9a334578ff0f2f64183683e0f",
-                "reference": "51411a612426d5a9a334578ff0f2f64183683e0f",
+                "url": "https://api.github.com/repos/saloonphp/laravel-plugin/zipball/c9754084dabe1002000d01cc2192fd08cfa6079d",
+                "reference": "c9754084dabe1002000d01cc2192fd08cfa6079d",
                 "shasum": ""
             },
             "require": {
@@ -4586,9 +4586,9 @@
                 "sdk"
             ],
             "support": {
-                "source": "https://github.com/saloonphp/laravel-plugin/tree/v4.2.0"
+                "source": "https://github.com/saloonphp/laravel-plugin/tree/v4.3.0"
             },
-            "time": "2026-04-12T12:56:19+00:00"
+            "time": "2026-04-23T23:22:12+00:00"
         },
         {
             "name": "saloonphp/saloon",
