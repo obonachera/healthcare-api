@@ -33,4 +33,3 @@ final readonly class StoreAppointmentController
             ->setStatusCode(JsonResponse::HTTP_CREATED);
     }
 }
-
