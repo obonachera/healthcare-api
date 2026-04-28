@@ -7,6 +7,8 @@ namespace Lightit\Shared\App\Providers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Lightit\Appointment\App\Events\AppointmentCreatedEvent;
+use Lightit\Appointment\App\Listeners\SendAppointmentCreatedNotificationListener;
 use Lightit\Shared\App\Events\TestEvent;
 use Lightit\Shared\App\Listeners\TestListener;
 
@@ -25,18 +27,10 @@ class EventServiceProvider extends ServiceProvider
         TestEvent::class => [
             TestListener::class,
         ],
+        AppointmentCreatedEvent::class => [
+            SendAppointmentCreatedNotificationListener::class,
+        ],
     ];
-
-    /**
-     * Register any events for your application.
-     */
-    public function boot(): void
-    {
-    }
-
-    public function register(): void
-    {
-    }
 
     /**
      * Determine if events and listeners should be automatically discovered.
