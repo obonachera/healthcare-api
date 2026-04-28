@@ -6,6 +6,7 @@ namespace Lightit\Appointment\Domain\Actions;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Lightit\Appointment\Domain\Models\Appointment;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class ListAppointmentAction
@@ -14,7 +15,11 @@ class ListAppointmentAction
     public function execute(): LengthAwarePaginator
     {
         return QueryBuilder::for(Appointment::class)
-            ->allowedFilters(['doctor_id', 'clinic_id', 'id'])
+            ->allowedFilters([
+                AllowedFilter::exact('doctor_id'),
+                AllowedFilter::exact('clinic_id'),
+                AllowedFilter::exact('id'),
+            ])
             ->allowedSorts('date')
             ->orderBy('id', 'desc')
             ->paginate();
