@@ -11,6 +11,7 @@ use Database\Factories\UserFactory;
 use Lightit\Appointment\App\Controllers\UpdateAppointmentController;
 use Lightit\Appointment\Domain\Models\Appointment;
 use Tests\RequestFactories\UpsertAppointmentRequestFactory;
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\putJson;
 
@@ -41,6 +42,8 @@ describe('appointments', function (): void {
             'end_time'   => $newEnd->toDateTimeString(),
         ];
 
+        actingAs($user, 'api');
+
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertOk();
 
@@ -52,6 +55,7 @@ describe('appointments', function (): void {
     });
 
     it('allows updating an appointment to its own time slot', function (): void {
+        /** @var array{doctor_id: int, user_id: int, clinic_id: int, start_time: string, end_time: string} $data */
         $data = UpsertAppointmentRequestFactory::new()->create();
 
         $appointment = Appointment::query()->create([
@@ -61,12 +65,15 @@ describe('appointments', function (): void {
             'start_time' => CarbonImmutable::parse($data['start_time']),
             'end_time'   => CarbonImmutable::parse($data['end_time']),
         ]);
+
+        actingAs(UserFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertOk();
     });
 
     it('rejects when end_time is not after start_time on update', function (): void {
+        /** @var array{doctor_id: int, user_id: int, clinic_id: int, start_time: string, end_time: string} $data */
         $data = UpsertAppointmentRequestFactory::new()->create();
 
         $appointment = Appointment::query()->create([
@@ -76,6 +83,8 @@ describe('appointments', function (): void {
             'start_time' => CarbonImmutable::parse($data['start_time']),
             'end_time'   => CarbonImmutable::parse($data['end_time']),
         ]);
+
+        actingAs(UserFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", [
             ...$data,
@@ -83,10 +92,11 @@ describe('appointments', function (): void {
             'end_time'   => CarbonImmutable::tomorrow()->setHour(9)->toDateTimeString(),
         ])
             ->assertUnprocessable()
-            ->assertJson(['error' => ['code' => 'invalid_time_range']]);
+            ->assertJson(['error' => ['code' => 'validation_failed']]);
     });
 
     it('rejects when doctor is not assigned to clinic on update', function (): void {
+        /** @var array{doctor_id: int, user_id: int, clinic_id: int, start_time: string, end_time: string} $data */
         $data = UpsertAppointmentRequestFactory::new()->create();
 
         $appointment = Appointment::query()->create([
@@ -98,6 +108,8 @@ describe('appointments', function (): void {
         ]);
 
         $unassignedClinic = ClinicFactory::new()->createOne();
+
+        actingAs(UserFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", [
             ...$data,
@@ -133,6 +145,8 @@ describe('appointments', function (): void {
             'end_time'   => $conflictingEnd,
         ]);
 
+        actingAs($user, 'api');
+
         putJson("/api/appointments/{$appointment->id}", [
             'doctor_id'  => $doctor->id,
             'clinic_id'  => $clinic->id,
@@ -145,7 +159,11 @@ describe('appointments', function (): void {
     });
 
     it('returns 404 when appointment is not found', function (): void {
+        /** @var array{doctor_id: int, user_id: int, clinic_id: int, start_time: string, end_time: string} $data */
         $data = UpsertAppointmentRequestFactory::new()->create();
+
+        actingAs(UserFactory::new()->createOne(), 'api');
+
         putJson('/api/appointments/99999', $data)->assertNotFound();
     });
 });

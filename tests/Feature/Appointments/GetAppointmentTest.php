@@ -11,6 +11,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Lightit\Appointment\App\Controllers\GetAppointmentController;
 use Lightit\Appointment\Domain\Models\Appointment;
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
 
 describe('appointments', function (): void {
@@ -28,6 +29,8 @@ describe('appointments', function (): void {
             'start_time' => CarbonImmutable::tomorrow()->setHour(9),
             'end_time'   => CarbonImmutable::tomorrow()->setHour(10),
         ]);
+
+        actingAs($user, 'api');
 
         getJson("/api/appointments/{$appointment->id}")
             ->assertOk()
@@ -47,6 +50,8 @@ describe('appointments', function (): void {
     });
 
     it('returns 404 when appointment is not found', function (): void {
+        actingAs(UserFactory::new()->createOne(), 'api');
+
         getJson('/api/appointments/99999')->assertNotFound();
     });
 });

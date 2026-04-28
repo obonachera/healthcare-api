@@ -10,6 +10,7 @@ use Database\Factories\DoctorFactory;
 use Database\Factories\UserFactory;
 use Lightit\Appointment\App\Controllers\ListAppointmentController;
 use Lightit\Appointment\Domain\Models\Appointment;
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
 
 describe('appointments', function (): void {
@@ -35,6 +36,8 @@ describe('appointments', function (): void {
             'start_time' => CarbonImmutable::tomorrow()->setHour(11),
             'end_time'   => CarbonImmutable::tomorrow()->setHour(12),
         ]);
+
+        actingAs($user, 'api');
 
         getJson('/api/appointments')
             ->assertOk()
@@ -65,6 +68,8 @@ describe('appointments', function (): void {
             'end_time'   => CarbonImmutable::tomorrow()->setHour(12),
         ]);
 
+        actingAs($user, 'api');
+
         getJson("/api/appointments?filter[doctor_id]={$doctor1->id}")
             ->assertOk()
             ->assertJsonCount(1, 'data');
@@ -93,6 +98,8 @@ describe('appointments', function (): void {
             'start_time' => CarbonImmutable::tomorrow()->setHour(11),
             'end_time'   => CarbonImmutable::tomorrow()->setHour(12),
         ]);
+
+        actingAs($user, 'api');
 
         getJson("/api/appointments?filter[clinic_id]={$clinic1->id}")
             ->assertOk()
