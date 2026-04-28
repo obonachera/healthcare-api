@@ -7,7 +7,7 @@ namespace Lightit\Appointment\Domain\Actions;
 use Carbon\CarbonImmutable;
 use Lightit\Appointment\Domain\Models\Appointment;
 
-class CheckAvailabilityAction
+class IsUnavailableAction
 {
     public function execute(
         string $column,
@@ -16,7 +16,7 @@ class CheckAvailabilityAction
         CarbonImmutable $endTime,
         int|null $excludeAppointmentId = null,
     ): bool {
-        return ! Appointment::query()
+        return Appointment::query()
             ->where($column, $entityId)
             ->where('start_time', '<', $endTime)
             ->where('end_time', '>', $startTime)

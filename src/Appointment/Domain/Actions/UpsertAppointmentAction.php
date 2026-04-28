@@ -7,20 +7,18 @@ namespace Lightit\Appointment\Domain\Actions;
 use Lightit\Appointment\Domain\DataTransferObjects\AppointmentDto;
 use Lightit\Appointment\Domain\Exceptions\DoctorNotAssignedToClinicException;
 use Lightit\Appointment\Domain\Exceptions\DoctorNotAvailableException;
-use Lightit\Appointment\Domain\Exceptions\InvalidTimeRangeException;
 use Lightit\Appointment\Domain\Exceptions\UserNotAvailableException;
 use Lightit\Appointment\Domain\Models\Appointment;
 use Lightit\Doctor\Domain\Models\Doctor;
 
 class UpsertAppointmentAction
 {
-    public function __construct(private readonly CheckAvailabilityAction $checkAvailability)
+    public function __construct(private readonly IsUnavailableAction $isUnavailable)
     {
     }
 
     public function execute(AppointmentDto $dto, Appointment|null $appointment = null): Appointment
     {
-        
         $doctorBelongsToClinic = Doctor::query()
             ->where('id', $dto->doctorId)
             ->whereHas(
@@ -35,17 +33,27 @@ class UpsertAppointmentAction
 
         $excludeId = $appointment?->id;
 
-        if (! $this->checkAvailability->execute('user_id', $dto->userId, $dto->startTime, $dto->endTime, $excludeId)) {
+        $userIsUnavailable = $this->isUnavailable->execute(
+            'user_id',
+            $dto->userId,
+            $dto->startTime,
+            $dto->endTime,
+            $excludeId
+        );
+
+        if ($userIsUnavailable) {
             throw new UserNotAvailableException();
         }
 
-        if (! $this->checkAvailability->execute(
+        $doctorIsUnavailable = $this->isUnavailable->execute(
             'doctor_id',
             $dto->doctorId,
             $dto->startTime,
             $dto->endTime,
             $excludeId
-        )) {
+        );
+
+        if ($doctorIsUnavailable) {
             throw new DoctorNotAvailableException();
         }
 
