@@ -20,10 +20,7 @@ class UpsertAppointmentAction
 
     public function execute(AppointmentDto $dto, Appointment|null $appointment = null): Appointment
     {
-        if ($dto->startTime >= $dto->endTime) {
-            throw new InvalidTimeRangeException();
-        }
-
+        
         $doctorBelongsToClinic = Doctor::query()
             ->where('id', $dto->doctorId)
             ->whereHas(

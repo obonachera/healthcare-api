@@ -31,7 +31,7 @@ class UpsertAppointmentRequest extends FormRequest
             self::CLINIC_ID => Rule::exists('clinics', 'id'),
             self::USER_ID => Rule::exists('users', 'id'),
             self::START_TIME => ['required', 'date', 'after:' . now()],
-            self::END_TIME => ['required', 'date', 'after:' . now()],
+            self::END_TIME => ['required', 'date', 'after:' . $this->input(self::START_TIME)],
         ];
     }
 
