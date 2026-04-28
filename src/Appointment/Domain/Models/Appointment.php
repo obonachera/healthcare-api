@@ -61,7 +61,7 @@ class Appointment extends Model
      * @var list<string>
      */
     #[\Override]
-    protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
+    protected $guarded = ['id'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Doctor, $this>
