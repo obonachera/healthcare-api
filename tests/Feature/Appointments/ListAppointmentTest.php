@@ -28,7 +28,7 @@ describe('appointments', function (): void {
     });
 
     it('can filter appointments by doctor_id', function (): void {
-        $clinic  = ClinicFactory::new()->createOne();
+        $clinic = ClinicFactory::new()->createOne();
         $doctor1 = DoctorFactory::new()->createOne();
         $doctor2 = DoctorFactory::new()->createOne();
 
@@ -43,7 +43,7 @@ describe('appointments', function (): void {
     });
 
     it('can filter appointments by clinic_id', function (): void {
-        $doctor  = DoctorFactory::new()->createOne();
+        $doctor = DoctorFactory::new()->createOne();
         $clinic1 = ClinicFactory::new()->createOne();
         $clinic2 = ClinicFactory::new()->createOne();
 

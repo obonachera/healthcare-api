@@ -66,7 +66,7 @@ describe('appointments', function (): void {
     });
 
     it('rejects when doctor is not assigned to clinic on update', function (): void {
-        $appointment      = AppointmentFactory::new()->createOne();
+        $appointment = AppointmentFactory::new()->createOne();
         $unassignedClinic = ClinicFactory::new()->createOne();
 
         $data = UpsertAppointmentRequestFactory::new()->forAppointment($appointment)->create([
