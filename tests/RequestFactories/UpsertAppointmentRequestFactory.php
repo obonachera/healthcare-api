@@ -4,29 +4,33 @@ declare(strict_types=1);
 
 namespace Tests\RequestFactories;
 
-use Carbon\CarbonImmutable;
-use Database\Factories\ClinicFactory;
-use Database\Factories\DoctorFactory;
-use Database\Factories\UserFactory;
+use Database\Factories\AppointmentFactory;
+use Lightit\Appointment\Domain\Models\Appointment;
 use Worksome\RequestFactories\RequestFactory;
 
 class UpsertAppointmentRequestFactory extends RequestFactory
 {
     public function definition(): array
     {
-        $doctor = DoctorFactory::new()->createOne();
-        $clinic = ClinicFactory::new()->createOne();
-        $user   = UserFactory::new()->createOne();
-        $doctor->clinics()->attach($clinic->id);
-
-        $start = CarbonImmutable::tomorrow()->setHour(9);
+        $appointment = AppointmentFactory::new()->createOne();
 
         return [
-            'doctor_id'  => $doctor->id,
-            'clinic_id'  => $clinic->id,
-            'user_id'    => $user->id,
-            'start_time' => $start->toDateTimeString(),
-            'end_time'   => $start->addHour()->toDateTimeString(),
+            'doctor_id'  => $appointment->doctor_id,
+            'clinic_id'  => $appointment->clinic_id,
+            'user_id'    => $appointment->user_id,
+            'start_time' => $appointment->start_time->toDateTimeString(),
+            'end_time'   => $appointment->end_time->toDateTimeString(),
         ];
+    }
+
+    public function forAppointment(Appointment $appointment): static
+    {
+        return $this->state([
+            'doctor_id'  => $appointment->doctor_id,
+            'clinic_id'  => $appointment->clinic_id,
+            'user_id'    => $appointment->user_id,
+            'start_time' => $appointment->start_time->toDateTimeString(),
+            'end_time'   => $appointment->end_time->toDateTimeString(),
+        ]);
     }
 }
