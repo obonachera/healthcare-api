@@ -85,7 +85,6 @@ Route::prefix('doctors')
             Route::get('/', GetDoctorController::class)->withTrashed();
             Route::put('/', UpdateDoctorController::class);
             Route::delete('/', DeleteDoctorController::class);
-            Route::get('/availability', GetDoctorAvailabilityController::class);
         })->whereNumber('doctor');
     });
 
