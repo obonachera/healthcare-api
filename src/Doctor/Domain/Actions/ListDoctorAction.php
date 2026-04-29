@@ -16,9 +16,9 @@ class ListDoctorAction
     public function execute(): LengthAwarePaginator
     {
         return QueryBuilder::for(Doctor::class)
-            ->with(['clinics' => fn ($q) => $q->withCount('doctors')])
             ->allowedFilters('name')
             ->allowedSorts('name')
+            ->with(['clinics' => fn (\Illuminate\Database\Eloquent\Relations\Relation $q) => $q->withCount('doctors')])
             ->orderBy('id', 'desc')
             ->paginate();
     }

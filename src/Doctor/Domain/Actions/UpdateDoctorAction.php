@@ -16,6 +16,6 @@ class UpdateDoctorAction
 
         $doctor->clinics()->sync($doctorDto->clinics);
 
-        return $doctor->load(['clinics' => fn ($q) => $q->withCount('doctors')]);
+        return $doctor->load(['clinics' => fn (\Illuminate\Database\Eloquent\Builder $q) => $q->withCount('doctors')]);
     }
 }

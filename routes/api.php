@@ -26,6 +26,7 @@ use Lightit\Appointment\App\Controllers\GetAppointmentController;
 use Lightit\Appointment\App\Controllers\ListAppointmentController;
 use Lightit\Appointment\App\Controllers\StoreAppointmentController;
 use Lightit\Appointment\App\Controllers\UpdateAppointmentController;
+use Lightit\Authentication\App\Controllers\{LoginController, LogoutController, RefreshController};
 
 
 /*
@@ -39,12 +40,14 @@ use Lightit\Appointment\App\Controllers\UpdateAppointmentController;
 |
 */
 
-Route::middleware('auth:sanctum')
-    ->get('/me', fn(
-        #[CurrentUser] $user
-    ) => response()->json([
-        'data' => $user,
-    ]));
+
+Route::prefix('auth')->group(static function (): void {
+    Route::post('login', LoginController::class);
+    Route::middleware(['auth:api'])->group(static function (): void {
+            Route::post('logout', LogoutController::class);
+            Route::post('refresh', RefreshController::class);
+        });
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -82,11 +85,11 @@ Route::prefix('doctors')
             Route::get('/', GetDoctorController::class)->withTrashed();
             Route::put('/', UpdateDoctorController::class);
             Route::delete('/', DeleteDoctorController::class);
-            Route::get('/availability', GetDoctorAvailabilityController::class);
         })->whereNumber('doctor');
     });
 
 Route::prefix('appointments')
+    ->middleware('auth:api')
     ->group(static function (): void {
         Route::get('/', ListAppointmentController::class);
         Route::post('/', StoreAppointmentController::class);

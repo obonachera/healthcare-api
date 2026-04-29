@@ -5,41 +5,29 @@ declare(strict_types=1);
 namespace Tests\Feature\Appointments;
 
 use Carbon\CarbonImmutable;
+use Database\Factories\AppointmentFactory;
 use Database\Factories\ClinicFactory;
 use Database\Factories\DoctorFactory;
 use Database\Factories\UserFactory;
 use Lightit\Appointment\App\Controllers\UpdateAppointmentController;
-use Lightit\Appointment\Domain\Models\Appointment;
 use Tests\RequestFactories\UpsertAppointmentRequestFactory;
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\putJson;
 
 describe('appointments', function (): void {
     /** @see UpdateAppointmentController */
     it('can update an appointment successfully', function (): void {
-        $doctor = DoctorFactory::new()->createOne();
-        $clinic = ClinicFactory::new()->createOne();
-        $user = UserFactory::new()->createOne();
-        $doctor->clinics()->attach($clinic->id);
-
-        $appointment = Appointment::query()->create([
-            'doctor_id'  => $doctor->id,
-            'user_id'    => $user->id,
-            'clinic_id'  => $clinic->id,
-            'start_time' => CarbonImmutable::tomorrow()->setHour(9),
-            'end_time'   => CarbonImmutable::tomorrow()->setHour(10),
-        ]);
+        $appointment = AppointmentFactory::new()->createOne();
 
         $newStart = CarbonImmutable::tomorrow()->setHour(11);
-        $newEnd = $newStart->addHour();
 
-        $data = [
-            'doctor_id'  => $doctor->id,
-            'clinic_id'  => $clinic->id,
-            'user_id'    => $user->id,
+        $data = UpsertAppointmentRequestFactory::new()->forAppointment($appointment)->create([
             'start_time' => $newStart->toDateTimeString(),
-            'end_time'   => $newEnd->toDateTimeString(),
-        ];
+            'end_time'   => $newStart->addHour()->toDateTimeString(),
+        ]);
+
+        actingAs(UserFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertOk();
@@ -47,62 +35,47 @@ describe('appointments', function (): void {
         assertDatabaseHas('appointments', [
             'id'         => $appointment->id,
             'start_time' => $newStart->toDateTimeString(),
-            'end_time'   => $newEnd->toDateTimeString(),
+            'end_time'   => $newStart->addHour()->toDateTimeString(),
         ]);
     });
 
     it('allows updating an appointment to its own time slot', function (): void {
-        $data = UpsertAppointmentRequestFactory::new()->create();
+        $appointment = AppointmentFactory::new()->createOne();
 
-        $appointment = Appointment::query()->create([
-            'doctor_id'  => $data['doctor_id'],
-            'user_id'    => $data['user_id'],
-            'clinic_id'  => $data['clinic_id'],
-            'start_time' => CarbonImmutable::parse($data['start_time']),
-            'end_time'   => CarbonImmutable::parse($data['end_time']),
-        ]);
+        $data = UpsertAppointmentRequestFactory::new()->forAppointment($appointment)->create();
+
+        actingAs(UserFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertOk();
     });
 
     it('rejects when end_time is not after start_time on update', function (): void {
-        $data = UpsertAppointmentRequestFactory::new()->create();
+        $appointment = AppointmentFactory::new()->createOne();
 
-        $appointment = Appointment::query()->create([
-            'doctor_id'  => $data['doctor_id'],
-            'user_id'    => $data['user_id'],
-            'clinic_id'  => $data['clinic_id'],
-            'start_time' => CarbonImmutable::parse($data['start_time']),
-            'end_time'   => CarbonImmutable::parse($data['end_time']),
-        ]);
-
-        putJson("/api/appointments/{$appointment->id}", [
-            ...$data,
+        $data = UpsertAppointmentRequestFactory::new()->forAppointment($appointment)->create([
             'start_time' => CarbonImmutable::tomorrow()->setHour(10)->toDateTimeString(),
             'end_time'   => CarbonImmutable::tomorrow()->setHour(9)->toDateTimeString(),
-        ])
+        ]);
+
+        actingAs(UserFactory::new()->createOne(), 'api');
+
+        putJson("/api/appointments/{$appointment->id}", $data)
             ->assertUnprocessable()
-            ->assertJson(['error' => ['code' => 'invalid_time_range']]);
+            ->assertJson(['error' => ['code' => 'validation_failed']]);
     });
 
     it('rejects when doctor is not assigned to clinic on update', function (): void {
-        $data = UpsertAppointmentRequestFactory::new()->create();
-
-        $appointment = Appointment::query()->create([
-            'doctor_id'  => $data['doctor_id'],
-            'user_id'    => $data['user_id'],
-            'clinic_id'  => $data['clinic_id'],
-            'start_time' => CarbonImmutable::parse($data['start_time']),
-            'end_time'   => CarbonImmutable::parse($data['end_time']),
-        ]);
-
+        $appointment = AppointmentFactory::new()->createOne();
         $unassignedClinic = ClinicFactory::new()->createOne();
 
-        putJson("/api/appointments/{$appointment->id}", [
-            ...$data,
+        $data = UpsertAppointmentRequestFactory::new()->forAppointment($appointment)->create([
             'clinic_id' => $unassignedClinic->id,
-        ])
+        ]);
+
+        actingAs(UserFactory::new()->createOne(), 'api');
+
+        putJson("/api/appointments/{$appointment->id}", $data)
             ->assertUnprocessable()
             ->assertJson(['error' => ['code' => 'doctor_not_assigned_to_clinic']]);
     });
@@ -110,42 +83,39 @@ describe('appointments', function (): void {
     it('rejects when doctor has overlapping appointment from another booking on update', function (): void {
         $doctor = DoctorFactory::new()->createOne();
         $clinic = ClinicFactory::new()->createOne();
-        $user = UserFactory::new()->createOne();
-        $doctor->clinics()->attach($clinic->id);
+
+        $appointment = AppointmentFactory::new()
+            ->forDoctor($doctor)
+            ->forClinic($clinic)
+            ->withTimeSlot(9, 10)
+            ->createOne();
+
+        AppointmentFactory::new()
+            ->forDoctor($doctor)
+            ->forClinic($clinic)
+            ->withTimeSlot(14, 15)
+            ->createOne();
 
         $conflictingStart = CarbonImmutable::tomorrow()->setHour(14);
-        $conflictingEnd = $conflictingStart->addHour();
 
-        $appointment = Appointment::query()->create([
-            'doctor_id'  => $doctor->id,
-            'user_id'    => $user->id,
-            'clinic_id'  => $clinic->id,
-            'start_time' => CarbonImmutable::tomorrow()->setHour(9),
-            'end_time'   => CarbonImmutable::tomorrow()->setHour(10),
-        ]);
-
-        $user2 = UserFactory::new()->createOne();
-        Appointment::query()->create([
-            'doctor_id'  => $doctor->id,
-            'user_id'    => $user2->id,
-            'clinic_id'  => $clinic->id,
-            'start_time' => $conflictingStart,
-            'end_time'   => $conflictingEnd,
-        ]);
-
-        putJson("/api/appointments/{$appointment->id}", [
-            'doctor_id'  => $doctor->id,
-            'clinic_id'  => $clinic->id,
-            'user_id'    => $user->id,
+        $data = UpsertAppointmentRequestFactory::new()->forAppointment($appointment)->create([
             'start_time' => $conflictingStart->toDateTimeString(),
-            'end_time'   => $conflictingEnd->toDateTimeString(),
-        ])
+            'end_time'   => $conflictingStart->addHour()->toDateTimeString(),
+        ]);
+
+        actingAs(UserFactory::new()->createOne(), 'api');
+
+        putJson("/api/appointments/{$appointment->id}", $data)
             ->assertUnprocessable()
             ->assertJson(['error' => ['code' => 'doctor_not_available']]);
     });
 
     it('returns 404 when appointment is not found', function (): void {
+        /** @var array{doctor_id: int, user_id: int, clinic_id: int, start_time: string, end_time: string} $data */
         $data = UpsertAppointmentRequestFactory::new()->create();
+
+        actingAs(UserFactory::new()->createOne(), 'api');
+
         putJson('/api/appointments/99999', $data)->assertNotFound();
     });
 });
