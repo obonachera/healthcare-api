@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Support\Facades\Route;
 use Lightit\Users\App\Controllers\DeleteUserController;
 use Lightit\Users\App\Controllers\GetUserAppointmentsController;
@@ -85,6 +84,7 @@ Route::prefix('doctors')
             Route::get('/', GetDoctorController::class)->withTrashed();
             Route::put('/', UpdateDoctorController::class);
             Route::delete('/', DeleteDoctorController::class);
+            Route::get('/availability', GetDoctorAvailabilityController::class);
         })->whereNumber('doctor');
     });
 
