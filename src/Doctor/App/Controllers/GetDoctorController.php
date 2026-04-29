@@ -20,7 +20,7 @@ final readonly class GetDoctorController
     )]
     public function __invoke(Doctor $doctor): JsonResponse
     {
-        return DoctorResource::make($doctor->load(['clinics' => fn ($q) => $q->withCount('doctors')]))
+        return DoctorResource::make($doctor->load(['clinics' => fn (\Illuminate\Database\Eloquent\Builder $q) => $q->withCount('doctors')]))
             ->response();
     }
 }
