@@ -6,7 +6,6 @@ namespace Lightit\Appointment\App\Controllers;
 
 use Dedoc\Scramble\Attributes\Endpoint;
 use Dedoc\Scramble\Attributes\Group;
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\JsonResponse;
 use Lightit\Appointment\App\Events\AppointmentCreatedEvent;
 use Lightit\Appointment\App\Requests\UpsertAppointmentRequest;
@@ -16,10 +15,6 @@ use Lightit\Appointment\Domain\Actions\UpsertAppointmentAction;
 #[Group('Appointments')]
 final readonly class StoreAppointmentController
 {
-    public function __construct(private Dispatcher $dispatcher)
-    {
-    }
-
     #[Endpoint(
         operationId: 'storeAppointment',
         title: 'Create an appointment',
@@ -31,7 +26,7 @@ final readonly class StoreAppointmentController
     ): JsonResponse {
         $appointment = $upsertAppointmentAction->execute($request->toDto());
 
-        $this->dispatcher->dispatch(new AppointmentCreatedEvent($appointment));
+        AppointmentCreatedEvent::dispatch($appointment);
 
         return AppointmentResource::make($appointment)
             ->response()
