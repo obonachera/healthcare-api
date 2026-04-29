@@ -11,6 +11,9 @@ class SendAppointmentCreatedNotificationListener
 {
     public function handle(AppointmentCreatedEvent $event): void
     {
-        $event->appointment->user->notify(new AppointmentCreatedNotification($event->appointment));
+        $appointment = $event->appointment;
+        $user = $appointment->user;
+
+        $user->notify(new AppointmentCreatedNotification($appointment));
     }
 }
