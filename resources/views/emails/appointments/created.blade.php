@@ -4,7 +4,7 @@
     <tr>
         <td style="padding:32px 40px 0;">
             <p style="margin:0;font-size:16px;color:#374151;line-height:1.6;">
-                Hi <strong>{{ $user->name }}</strong>,
+                Hi <strong>{{ $patient->name }}</strong>,
             </p>
             <p style="margin:12px 0 0;font-size:16px;color:#374151;line-height:1.6;">
                 Your appointment has been successfully booked. Here are the details:
