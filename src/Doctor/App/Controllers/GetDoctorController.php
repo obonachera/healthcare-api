@@ -9,6 +9,7 @@ use Dedoc\Scramble\Attributes\Group;
 use Illuminate\Http\JsonResponse;
 use Lightit\Doctor\App\Resources\DoctorResource;
 use Lightit\Doctor\Domain\Models\Doctor;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[Group('Doctors')]
 final readonly class GetDoctorController
@@ -21,7 +22,7 @@ final readonly class GetDoctorController
     public function __invoke(Doctor $doctor): JsonResponse
     {
         return DoctorResource::make(
-            $doctor->load(['clinics' => fn (\Illuminate\Database\Eloquent\Builder $q) => $q->withCount('doctors')])
+            $doctor->load(['clinics' => fn (BelongsToMany $q) => $q->withCount('doctors')])
         )
             ->response();
     }
