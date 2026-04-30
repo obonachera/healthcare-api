@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
-use Lightit\Users\Domain\Models\User;
+use Lightit\Patients\Domain\Models\Patient;
 
 class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 {
@@ -69,7 +69,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     protected function gate(): void
     {
-        Gate::define('viewTelescope', fn (User $user): bool => in_array($user->email, [
+        Gate::define('viewTelescope', fn (Patient $patient): bool => in_array($patient->email, [
 
         ]));
     }

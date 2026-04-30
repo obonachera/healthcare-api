@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Lightit\Authentication\Domain\DataTransferObjects\ResetPasswordDto;
 use Lightit\Authentication\Domain\Exceptions\ResetPasswordException;
-use Lightit\Users\Domain\Models\User;
+use Lightit\Patients\Domain\Models\Patient;
 
 final readonly class ResetPasswordAction
 {
@@ -19,7 +19,7 @@ final readonly class ResetPasswordAction
     {
         $broker = Password::broker();
 
-        /** @var User|null $user */
+        /** @var Patient|null $user */
         $user = $broker->getUser(['email' => $dto->email]);
 
         if (! $user || ! $broker->tokenExists($user, $dto->token)) {

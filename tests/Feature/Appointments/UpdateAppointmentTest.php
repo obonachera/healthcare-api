@@ -8,7 +8,7 @@ use Carbon\CarbonImmutable;
 use Database\Factories\AppointmentFactory;
 use Database\Factories\ClinicFactory;
 use Database\Factories\DoctorFactory;
-use Database\Factories\UserFactory;
+use Database\Factories\PatientFactory;
 use Lightit\Appointment\App\Controllers\UpdateAppointmentController;
 use Tests\RequestFactories\UpsertAppointmentRequestFactory;
 use function Pest\Laravel\actingAs;
@@ -27,7 +27,7 @@ describe('appointments', function (): void {
             'end_time'   => $newStart->addHour()->toDateTimeString(),
         ]);
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertOk();
@@ -44,7 +44,7 @@ describe('appointments', function (): void {
 
         $data = UpsertAppointmentRequestFactory::new()->forAppointment($appointment)->create();
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertOk();
@@ -58,7 +58,7 @@ describe('appointments', function (): void {
             'end_time'   => CarbonImmutable::tomorrow()->setHour(9)->toDateTimeString(),
         ]);
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertUnprocessable()
@@ -73,7 +73,7 @@ describe('appointments', function (): void {
             'clinic_id' => $unassignedClinic->id,
         ]);
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertUnprocessable()
@@ -103,7 +103,7 @@ describe('appointments', function (): void {
             'end_time'   => $conflictingStart->addHour()->toDateTimeString(),
         ]);
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         putJson("/api/appointments/{$appointment->id}", $data)
             ->assertUnprocessable()
@@ -111,10 +111,10 @@ describe('appointments', function (): void {
     });
 
     it('returns 404 when appointment is not found', function (): void {
-        /** @var array{doctor_id: int, user_id: int, clinic_id: int, start_time: string, end_time: string} $data */
+        /** @var array{doctor_id: int, patient_id: int, clinic_id: int, start_time: string, end_time: string} $data */
         $data = UpsertAppointmentRequestFactory::new()->create();
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         putJson('/api/appointments/99999', $data)->assertNotFound();
     });

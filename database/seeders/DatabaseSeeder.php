@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use Database\Factories\UserFactory;
+use Database\Factories\PatientFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,6 +17,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        UserFactory::new()->createMany(35);
+        PatientFactory::new()->createMany(35);
     }
 }

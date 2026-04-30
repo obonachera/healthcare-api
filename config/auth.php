@@ -17,7 +17,7 @@ return [
 
     'defaults' => [
         'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'passwords' => env('AUTH_PASSWORD_BROKER', 'patients'),
     ],
 
     /*
@@ -40,11 +40,11 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'patients',
         ],
         'api' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'patients',
         ],
     ],
 
@@ -66,14 +66,14 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'patients' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', \Lightit\Users\Domain\Models\User::class),
+            'model' => env('AUTH_MODEL', \Lightit\Patients\Domain\Models\Patient::class),
         ],
 
-        // 'users' => [
+        // 'patients' => [
         //     'driver' => 'database',
-        //     'table' => 'users',
+        //     'table' => 'patients',
         // ],
     ],
 
@@ -97,8 +97,8 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'patients' => [
+            'provider' => 'patients',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,
