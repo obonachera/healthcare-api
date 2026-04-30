@@ -6,6 +6,7 @@ namespace Lightit\Doctor\App\Controllers;
 
 use Dedoc\Scramble\Attributes\Endpoint;
 use Dedoc\Scramble\Attributes\Group;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Lightit\Doctor\App\Resources\DoctorResource;
 use Lightit\Doctor\Domain\Models\Doctor;
@@ -21,7 +22,7 @@ final readonly class GetDoctorController
     public function __invoke(Doctor $doctor): JsonResponse
     {
         return DoctorResource::make(
-            $doctor->load(['clinics' => fn (\Illuminate\Database\Eloquent\Builder $q) => $q->withCount('doctors')])
+            $doctor->load(['clinics' => fn (BelongsToMany $q) => $q->withCount('doctors')])
         )
             ->response();
     }
