@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Lightit\Appointment\Domain\Models\Appointment;
 use Lightit\Clinic\Domain\Models\Clinic;
 use Lightit\Doctor\Domain\Models\Doctor;
-use Lightit\Users\Domain\Models\User;
+use Lightit\Patients\Domain\Models\Patient;
 
 /**
  * @extends Factory<Appointment>
@@ -23,11 +23,11 @@ class AppointmentFactory extends Factory
     {
         $doctor = DoctorFactory::new()->createOne();
         $clinic = ClinicFactory::new()->createOne();
-        $user   = UserFactory::new()->createOne();
+        $patient = PatientFactory::new()->createOne();
 
         return [
             'doctor_id'  => $doctor->id,
-            'user_id'    => $user->id,
+            'patient_id' => $patient->id,
             'clinic_id'  => $clinic->id,
             'start_time' => CarbonImmutable::tomorrow()->setHour(9),
             'end_time'   => CarbonImmutable::tomorrow()->setHour(10),
@@ -51,9 +51,9 @@ class AppointmentFactory extends Factory
         return $this->state(['doctor_id' => $doctor->id]);
     }
 
-    public function forUser(User $user): static
+    public function forPatient(Patient $patient): static
     {
-        return $this->state(['user_id' => $user->id]);
+        return $this->state(['patient_id' => $patient->id]);
     }
 
     public function forClinic(Clinic $clinic): static

@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Lightit\Clinic\Domain\Models\Clinic;
 use Lightit\Doctor\Domain\Models\Doctor;
-use Lightit\Users\Domain\Models\User;
+use Lightit\Patients\Domain\Models\Patient;
 
 /**
  * @property int                          $id
  * @property int                          $doctor_id
- * @property int                          $user_id
+ * @property int                          $patient_id
  * @property int                          $clinic_id
  * @property \Carbon\CarbonImmutable      $start_time
  * @property \Carbon\CarbonImmutable      $end_time
@@ -23,7 +23,7 @@ use Lightit\Users\Domain\Models\User;
  * @property \Carbon\CarbonImmutable|null $deleted_at
  * @property-read Clinic|null $clinic
  * @property-read Doctor|null $doctor
- * @property-read User $user
+ * @property-read Patient $patient
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment newQuery()
@@ -35,9 +35,9 @@ use Lightit\Users\Domain\Models\User;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment whereDoctorId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment whereEndTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment wherePatientId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment whereStartTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Appointment withoutTrashed()
  *
@@ -72,11 +72,11 @@ class Appointment extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Patient, $this>
      */
-    public function user(): BelongsTo
+    public function patient(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Patient::class);
     }
 
     /**

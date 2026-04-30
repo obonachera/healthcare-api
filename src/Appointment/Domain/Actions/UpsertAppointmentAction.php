@@ -7,7 +7,7 @@ namespace Lightit\Appointment\Domain\Actions;
 use Lightit\Appointment\Domain\DataTransferObjects\AppointmentDto;
 use Lightit\Appointment\Domain\Exceptions\DoctorNotAssignedToClinicException;
 use Lightit\Appointment\Domain\Exceptions\DoctorNotAvailableException;
-use Lightit\Appointment\Domain\Exceptions\UserNotAvailableException;
+use Lightit\Appointment\Domain\Exceptions\PatientNotAvailableException;
 use Lightit\Appointment\Domain\Models\Appointment;
 use Lightit\Doctor\Domain\Models\Doctor;
 
@@ -33,16 +33,16 @@ class UpsertAppointmentAction
 
         $excludeId = $appointment?->id;
 
-        $userIsUnavailable = $this->isUnavailable->execute(
-            'user_id',
-            $dto->userId,
+        $patientIsUnavailable = $this->isUnavailable->execute(
+            'patient_id',
+            $dto->patientId,
             $dto->startTime,
             $dto->endTime,
             $excludeId
         );
 
-        if ($userIsUnavailable) {
-            throw new UserNotAvailableException();
+        if ($patientIsUnavailable) {
+            throw new PatientNotAvailableException();
         }
 
         $doctorIsUnavailable = $this->isUnavailable->execute(
@@ -60,13 +60,13 @@ class UpsertAppointmentAction
         $appointment ??= new Appointment();
 
         $appointment->doctor_id = $dto->doctorId;
-        $appointment->user_id = $dto->userId;
+        $appointment->patient_id = $dto->patientId;
         $appointment->clinic_id = $dto->clinicId;
         $appointment->start_time = $dto->startTime;
         $appointment->end_time = $dto->endTime;
          
         $appointment->saveOrFail();
 
-        return $appointment->load(['doctor', 'user', 'clinic']);
+        return $appointment->load(['doctor', 'patient', 'clinic']);
     }
 }

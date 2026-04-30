@@ -7,7 +7,7 @@ namespace Tests\Feature\Appointments;
 use Database\Factories\AppointmentFactory;
 use Database\Factories\ClinicFactory;
 use Database\Factories\DoctorFactory;
-use Database\Factories\UserFactory;
+use Database\Factories\PatientFactory;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\getJson;
 
@@ -20,7 +20,7 @@ describe('appointments', function (): void {
         AppointmentFactory::new()->forDoctor($doctor)->forClinic($clinic)->withTimeSlot(9, 10)->createOne();
         AppointmentFactory::new()->forDoctor($doctor)->forClinic($clinic)->withTimeSlot(11, 12)->createOne();
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         getJson('/api/appointments')
             ->assertOk()
@@ -35,7 +35,7 @@ describe('appointments', function (): void {
         AppointmentFactory::new()->forDoctor($doctor1)->forClinic($clinic)->withTimeSlot(9, 10)->createOne();
         AppointmentFactory::new()->forDoctor($doctor2)->forClinic($clinic)->withTimeSlot(11, 12)->createOne();
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         getJson("/api/appointments?filter[doctor_id]={$doctor1->id}")
             ->assertOk()
@@ -50,7 +50,7 @@ describe('appointments', function (): void {
         AppointmentFactory::new()->forDoctor($doctor)->forClinic($clinic1)->withTimeSlot(9, 10)->createOne();
         AppointmentFactory::new()->forDoctor($doctor)->forClinic($clinic2)->withTimeSlot(11, 12)->createOne();
 
-        actingAs(UserFactory::new()->createOne(), 'api');
+        actingAs(PatientFactory::new()->createOne(), 'api');
 
         getJson("/api/appointments?filter[clinic_id]={$clinic1->id}")
             ->assertOk()

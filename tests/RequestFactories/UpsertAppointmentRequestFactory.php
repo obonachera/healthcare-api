@@ -17,7 +17,7 @@ class UpsertAppointmentRequestFactory extends RequestFactory
         return [
             'doctor_id'  => $appointment->doctor_id,
             'clinic_id'  => $appointment->clinic_id,
-            'user_id'    => $appointment->user_id,
+            'patient_id' => $appointment->patient_id,
             'start_time' => $appointment->start_time->toDateTimeString(),
             'end_time'   => $appointment->end_time->toDateTimeString(),
         ];
@@ -28,7 +28,7 @@ class UpsertAppointmentRequestFactory extends RequestFactory
         return $this->state([
             'doctor_id'  => $appointment->doctor_id,
             'clinic_id'  => $appointment->clinic_id,
-            'user_id'    => $appointment->user_id,
+            'patient_id' => $appointment->patient_id,
             'start_time' => $appointment->start_time->toDateTimeString(),
             'end_time'   => $appointment->end_time->toDateTimeString(),
         ]);
